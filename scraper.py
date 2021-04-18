@@ -17,6 +17,9 @@ def extract_next_links(url, resp):
     # check if url is valid
     if is_valid(url):
         print("good")
+    else:
+        print("bad")
+    print(url)    
 
     return thing
 
@@ -24,8 +27,13 @@ def extract_next_links(url, resp):
 def is_valid(url):
     try:
         # Parse a URL into 6 components:
-        # <scheme>://<netloc>/<path>;<params>?<query>#<fragment>
+        # <scheme>://<netloc>            /<path>;<params>?<query>#<fragment>
+        # http    ://calendar.ics.uci.edu/calendar.php   ?type=month&calend
+        # http    ://www.w3.org          /Addressing/URL/url-spec.txt
+        # https   ://ciir.cs.umass.edu   /downloads/SEIRiP.pdf
         parsed = urlparse(url)
+
+        #if <scheme> != http || https      
         if parsed.scheme not in set(["http", "https"]):
             return False
         # Checks the <netloc> part of the url to see if it's valid
@@ -34,8 +42,14 @@ def is_valid(url):
             + r".cs.uci.edu/" |
             + r".informatics.uci.edu/" |
             + r".stat.uci.edu/" |
-            + r"today.uci.edu/department/information_computer_sciences/", parsed.netloc)
+            + r"today.uci.edu/", parsed.netloc)    
+        
+        return not re.match(
+            r"department/information_computer_sciences/", parsed.path.lower())
+
+        return not re.match(r"calendar", parsed.netloc)    
         # Checks the <path> part of the URL to see if it's valid
+        #If <path> ends with this file extension
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"

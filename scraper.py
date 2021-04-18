@@ -17,6 +17,7 @@ def extract_next_links(url, resp):
     # check if url is valid
     if is_valid(url):
         print("good")
+        thing.append(url)
     else:
         print("bad")
     print(url)    

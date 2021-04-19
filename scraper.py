@@ -49,23 +49,26 @@ def is_valid(url):
             return False
         # Checks the <netloc> part of the url to see if it's valid
         print("Checking <netloc>:", parsed.netloc)
-        return not re.match(
+        if not re.match(
             r"w?w?w?.ics.uci.edu/?" |
             + r"w?w?w?.cs.uci.edu/?" |
             + r"w?w?w?.informatics.uci.edu/?" |
             + r"w?w?w?.stat.uci.edu/?" |
-            + r"today.uci.edu/?", parsed.netloc)
+            + r"today.uci.edu/?", parsed.netloc):
+            return False
 
-        return not re.match(
+       if not re.match(
             r"department/information_computer_sciences/", parsed.path.lower())
+            return False
 
-        print("Checking <netloc>:", parsed.netloc)
-        return not re.match(r"calendar", parsed.netloc)
+        print("Checking <netloc>:", parsed.netloc," For traps")
+        if re.match(r"calendar", parsed.netloc)
+            return False
         # Checks the <path> part of the URL to see if it's valid
         # If <path> ends with this file extension
         # re.match finds a match which returns True, not makes it false
         print("Checking <path>:", parsed.path.lower())
-        return not re.match(
+        if re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
             + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
@@ -73,7 +76,8 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower())
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
+            return False
 
     except TypeError:
         print("TypeError for ", parsed)

@@ -1,26 +1,36 @@
 import re
 from urllib.parse import urlparse
 import requests
+from bs4 import BeautifulSoup
 
 
 def scraper(url, resp):
-    links = extract_next_links(url, resp)
+    print("scrapping...")
+    links=[]
+    
+    if resp.raw_response:
+        print('Success!, 200<= raw_response <=400 ')
+        links = extract_next_links(url, resp)
+    else:
+        print('An error has occurred.')
+    
     return [link for link in links if is_valid(link)]
 
 # Implementation required.
 
 
 def extract_next_links(url, resp):
+    print("extracting...")
     # create a list to return to scraper()
-    thing = []
+    tingz = []
 
     # check if url is valid
     if is_valid(url):
         print("good")
-        thing.append(url)
+        tingz.append(url)
     else:
         print("bad")
-    print(url)    
+    print(url)
 
     return thing
 
@@ -34,23 +44,27 @@ def is_valid(url):
         # https   ://ciir.cs.umass.edu   /downloads/SEIRiP.pdf
         parsed = urlparse(url)
 
-        #if <scheme> != http || https      
+        # if <scheme> != http || https
         if parsed.scheme not in set(["http", "https"]):
             return False
         # Checks the <netloc> part of the url to see if it's valid
+        print("Checking <netloc>:", parsed.netloc)
         return not re.match(
-            r".ics.uci.edu/" |
-            + r".cs.uci.edu/" |
-            + r".informatics.uci.edu/" |
-            + r".stat.uci.edu/" |
-            + r"today.uci.edu/", parsed.netloc)    
-        
+            r"w?w?w?.ics.uci.edu/?" |
+            + r"w?w?w?.cs.uci.edu/?" |
+            + r"w?w?w?.informatics.uci.edu/?" |
+            + r"w?w?w?.stat.uci.edu/?" |
+            + r"today.uci.edu/?", parsed.netloc)
+
         return not re.match(
             r"department/information_computer_sciences/", parsed.path.lower())
 
-        return not re.match(r"calendar", parsed.netloc)    
+        print("Checking <netloc>:", parsed.netloc)
+        return not re.match(r"calendar", parsed.netloc)
         # Checks the <path> part of the URL to see if it's valid
-        #If <path> ends with this file extension
+        # If <path> ends with this file extension
+        # re.match finds a match which returns True, not makes it false
+        print("Checking <path>:", parsed.path.lower())
         return not re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"

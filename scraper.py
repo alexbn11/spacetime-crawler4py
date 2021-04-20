@@ -57,12 +57,12 @@ def is_valid(url):
             + r"today.uci.edu/?", parsed.netloc):
             return False
 
-       if not re.match(
-            r"department/information_computer_sciences/", parsed.path.lower())
+        if not re.match(
+            r"department/information_computer_sciences/", parsed.path.lower()):
             return False
 
         print("Checking <netloc>:", parsed.netloc," For traps")
-        if re.match(r"calendar", parsed.netloc)
+        if re.match(r"calendar", parsed.netloc):
             return False
         # Checks the <path> part of the URL to see if it's valid
         # If <path> ends with this file extension

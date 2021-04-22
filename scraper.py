@@ -26,14 +26,13 @@ def extract_next_links(url, resp):
 
     # check if url is valid
     if is_valid(url):
-        print("good")
+        print("Appending: {}".format(url))
         tingz.append(url)
     else:
-        print("bad")
-    print(url)
+        print("Rejecting: {}".format(url))
+   
 
-    return thing
-
+    return tingz
 
 def is_valid(url):
     try:
@@ -48,26 +47,26 @@ def is_valid(url):
         if parsed.scheme not in set(["http", "https"]):
             return False
         # Checks the <netloc> part of the url to see if it's valid
-        print("Checking <netloc>:", parsed.netloc)
+        print("Checking <netloc>: {}".format(parsed.netloc))
         if not re.match(
-            r"w?w?w?.ics.uci.edu/?" |
-            + r"w?w?w?.cs.uci.edu/?" |
-            + r"w?w?w?.informatics.uci.edu/?" |
-            + r"w?w?w?.stat.uci.edu/?" |
-            + r"today.uci.edu/?", parsed.netloc):
+            r"(www.)?ics.uci.edu/?"  
+            + r"|(www.)?cs.uci.edu/?"  #|in front helps sperate the searches
+            + r"|(www.)?informatics.uci.edu/?" 
+            + r"|(www.)?stat.uci.edu/?" 
+            + r"|today.uci.edu/?", parsed.netloc):
             return False
 
-        if not re.match(
-            r"department/information_computer_sciences/", parsed.path.lower()):
-            return False
+        #if not re.match(
+        #    r"department/information_computer_sciences/", parsed.path.lower()):
+        #    return False
 
-        print("Checking <netloc>:", parsed.netloc," For traps")
+        print("Checking <netloc>: {} for traps".format(parsed.netloc))
         if re.match(r"calendar", parsed.netloc):
             return False
         # Checks the <path> part of the URL to see if it's valid
-        # If <path> ends with this file extension
+        # If <path> ends with this file extension   .\.
         # re.match finds a match which returns True, not makes it false
-        print("Checking <path>:", parsed.path.lower())
+        print("Checking <path>:{}".format(parsed.path.lower()))
         if re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -78,6 +77,7 @@ def is_valid(url):
             + r"|thmx|mso|arff|rtf|jar|csv"
             + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
             return False
+        return True
 
     except TypeError:
         print("TypeError for ", parsed)

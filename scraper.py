@@ -9,7 +9,7 @@ def scraper(url, resp):
     links=[]
     
     if resp.raw_response:
-        print('Success!, 200<= raw_response <=400 ')
+        print('Success!, 200 <= raw_response <= 400 ')
         links = extract_next_links(url, resp)
     else:
         print('An error has occurred.')
@@ -56,9 +56,9 @@ def is_valid(url):
             + r"|today.uci.edu/?", parsed.netloc):
             return False
 
-        #if not re.match(
-        #    r"department/information_computer_sciences/", parsed.path.lower()):
-        #    return False
+        #if re.match(r"today.uci.edu/?", parsed.netloc):
+        #    if re.match(r"department/information_computer_sciences/?", parsed.path.lower()):
+        #       return true
 
         print("Checking <netloc>: {} for traps".format(parsed.netloc))
         if re.match(r"calendar", parsed.netloc):

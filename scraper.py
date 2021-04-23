@@ -6,33 +6,41 @@ from bs4 import BeautifulSoup
 
 def scraper(url, resp):
     print("scrapping...")
-    links=[]
-    
+    links = []
+
     if resp.raw_response:
         print('Success!, 200 <= raw_response <= 400 ')
         links = extract_next_links(url, resp)
     else:
         print('An error has occurred.')
-    
+
     return [link for link in links if is_valid(link)]
 
 # Implementation required.
 
 
 def extract_next_links(url, resp):
-    print("extracting...")
+    #print("extracting...")
     # create a list to return to scraper()
     tingz = []
 
+    resp.raw_response.encoding = 'utf-8'
+    soup = BeautifulSoup(resp.raw_response.text, "lxml")
+    linkers = []
+    for link in soup.findAll('a'):
+        linkers.append(link.get('href'))
+    print("All the links found in {}:{}".format(url,linkers))
+    
     # check if url is valid
-    if is_valid(url):
-        print("Appending: {}".format(url))
-        tingz.append(url)
-    else:
-        print("Rejecting: {}".format(url))
-   
+    for url in linkers:
+        if is_valid(url):
+            print("Appending: {}".format(url))
+            tingz.append(url)
+        else:
+            print("Rejecting: {}".format(url))
 
     return tingz
+
 
 def is_valid(url):
     try:
@@ -47,26 +55,26 @@ def is_valid(url):
         if parsed.scheme not in set(["http", "https"]):
             return False
         # Checks the <netloc> part of the url to see if it's valid
-        print("Checking <netloc>: {}".format(parsed.netloc))
+        #print("Checking <netloc>: {}".format(parsed.netloc))
         if not re.match(
-            r"(www.)?ics.uci.edu/?"  
-            + r"|(www.)?cs.uci.edu/?"  #|in front helps sperate the searches
-            + r"|(www.)?informatics.uci.edu/?" 
-            + r"|(www.)?stat.uci.edu/?" 
-            + r"|today.uci.edu/?", parsed.netloc):
+            r"(www.)?ics.uci.edu/?"
+            + r"|(www.)?cs.uci.edu/?"  # |in front helps sperate the searches
+            + r"|(www.)?informatics.uci.edu/?"
+            + r"|(www.)?stat.uci.edu/?"
+                + r"|today.uci.edu/?", parsed.netloc):
             return False
 
-        #if re.match(r"today.uci.edu/?", parsed.netloc):
+        # if re.match(r"today.uci.edu/?", parsed.netloc):
         #    if re.match(r"department/information_computer_sciences/?", parsed.path.lower()):
         #       return true
 
-        print("Checking <netloc>: {} for traps".format(parsed.netloc))
+        #print("Checking <netloc>: {} for traps".format(parsed.netloc))
         if re.match(r"calendar", parsed.netloc):
             return False
         # Checks the <path> part of the URL to see if it's valid
         # If <path> ends with this file extension   .\.
         # re.match finds a match which returns True, not makes it false
-        print("Checking <path>:{}".format(parsed.path.lower()))
+        #print("Checking <path>:{}".format(parsed.path.lower()))
         if re.match(
             r".*\.(css|js|bmp|gif|jpe?g|ico"
             + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -75,7 +83,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
+                + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
             return False
         return True
 

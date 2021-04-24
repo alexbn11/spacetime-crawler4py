@@ -1,5 +1,10 @@
 import re
 import requests
+import nltk
+from nltk.corpus import stopwords 
+from nltk.tokenize import word_tokenize 
+from urllib.parse import urlparse
+from bs4 import BeautifulSoup
 """
 # Making a get request
 response = requests.get('http://www.ics.uci.edu/~sharad/personal-home-page')
@@ -12,8 +17,9 @@ if response:
 else:
     print('An error has occurred.')
 
- # http ://calendar.ics.uci.edu/calendar.php   ?type=month&calend
+ # http ://calendar.ics.uci.edu/calendar.php?type=month&calend
 """
+#<scheme>://<netloc>/<path>;<params>?<query>#<fragment>
 # If zero or more characters at the beginning of string match the regular expression pattern, return a corresponding match object.
 # Return None if the string does not match the pattern; note that this is different from a zero-length match.
 # Note that even in MULTILINE mode, re.match() will only match at the beginning of the string and not at the beginning of each line.
@@ -22,8 +28,15 @@ else:
 
 txt = "ngs.ics.uci.edu"
 txt = "www.ics.uci.edu"
-# r'^(?:www.)?ics\.uci\.edu|.+\.ics\.uci\.edu'
-if re.match(r".+\.ics\.uci\.edu", txt):
-    print("Matched")
-else:
-    print("no match")
+txt = "calendar.php?type=month&calend"
+parsed = urlparse('https://evoke.ics.uci.edu/values-in-design-fellows-honored-at-iconference-2013/?replytocom=43778#respond')
+print(parsed)
+print(parsed.netloc)
+print(parsed.path)
+print(parsed.query)
+
+
+if re.match(r".*\?", parsed.netloc):
+    print("question?")
+
+

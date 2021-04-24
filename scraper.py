@@ -60,13 +60,13 @@ def is_valid(url):
             r".+\.ics\.uci\.edu"
             + r"|.+\.cs\.uci\.edu"  # |in front helps sperate the searches
             + r"|.+\.informatics\.uci\.edu"
-            + r"|.+\.stat\.uci\.edu", parsed.netloc)  
+            + r"|.+\.stat\.uci\.edu", parsed.netloc):  
             return False
         elif re.match(r"today\.uci\.edu/?", parsed.netloc) and re.match(r"department/information_computer_sciences/?", parsed.path.lower()):
             return True
         
         #print("Checking <netloc>: {} for traps".format(parsed.netloc))
-        if re.match(r"(www.)?calendar", parsed.netloc):
+        if re.match(r"(www\.)?calendar", parsed.netloc):
             return False
         
         #avoid Queries

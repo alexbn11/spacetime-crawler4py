@@ -57,12 +57,12 @@ def is_valid(url):
         # Checks the <netloc> part of the url to see if it's valid
         #print("Checking <netloc>: {}".format(parsed.netloc))
         if not re.match(
-            r"(www.)?ics.uci.edu/?"
-            + r"|(www.)?cs.uci.edu/?"  # |in front helps sperate the searches
-            + r"|(www.)?informatics.uci.edu/?"
-            + r"|(www.)?stat.uci.edu/?", parsed.netloc)  
+            r".+\.ics\.uci\.edu"
+            + r"|.+\.cs\.uci\.edu"  # |in front helps sperate the searches
+            + r"|.+\.informatics\.uci\.edu"
+            + r"|.+\.stat\.uci\.edu", parsed.netloc)  
             return False
-        elif re.match(r"today.uci.edu/?", parsed.netloc) and re.match(r"department/information_computer_sciences/?", parsed.path.lower()):
+        elif re.match(r"today\.uci\.edu/?", parsed.netloc) and re.match(r"department/information_computer_sciences/?", parsed.path.lower()):
             return True
         
         #print("Checking <netloc>: {} for traps".format(parsed.netloc))

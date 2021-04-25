@@ -7,6 +7,26 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 import re
+
+example_sent = """This is a sample sentence,
+                  showing off the stop words filtration."""
+  
+stop_words = set(stopwords.words('english')) 
+  
+word_tokens = word_tokenize(example_sent) 
+  
+filtered_sentence = [w for w in word_tokens if not w in stop_words] 
+  
+filtered_sentence = [] 
+  
+for w in word_tokens: 
+    if w not in stop_words: 
+        filtered_sentence.append(w) 
+  
+print(word_tokens) 
+print(filtered_sentence) 
+
+
 """
 # Making a get request
 response = requests.get('http://www.ics.uci.edu/~sharad/personal-home-page')
@@ -20,7 +40,7 @@ else:
     print('An error has occurred.')
 
  # http ://calendar.ics.uci.edu/calendar.php?type=month&calend
-"""
+
 # <scheme>://<netloc>/<path>;<params>?<query>#<fragment>
 # If zero or more characters at the beginning of string match the regular expression pattern, return a corresponding match object.
 # Return None if the string does not match the pattern; note that this is different from a zero-length match.
@@ -44,10 +64,7 @@ parsed1 = urlparse('https://speedtest.ics.uci.edu/')
 #print(parsed1.status_code)
 print(parsed)
 
-if re.match(r"today\.uci\.edu/?", parsed.netloc) and re.match(r"/department/information_computer_sciences/?", parsed.path.lower()):
-    print("Pass")
-else :   
-    print("fail")        
+      
 '''
 req = Request("https://www.stat.uci.edu//www.stat.uci.edu/news")
 html_page = urlopen(req)
@@ -83,7 +100,7 @@ if not re.match(
     + r"|.+\.informatics\.uci\.edu"
         + r"|.+\.stat\.uci\.edu", parsed.netloc):
     print("FAILED:NETLOC")
-elif re.match(r"today\.uci\.edu/?", parsed.netloc) and re.match(r"department/information_computer_sciences/?", parsed.path.lower()):
+elif re.match(r"today\.uci\.edu/?", parsed.netloc) and re.match(r"/department/information_computer_sciences/?", parsed.path.lower()):
     print("PASSED:NETLOC")
 
 

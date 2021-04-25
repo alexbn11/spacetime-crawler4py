@@ -1,6 +1,8 @@
 import re
 import requests
 import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from urllib.parse import urlparse, urljoin
@@ -24,9 +26,8 @@ def scraper(url, resp):
 
    # return [link for link in links if is_valid(link)]
     for link in links: 
-        if is_valid(link)
-        
-        return link
+        if is_valid(link):
+            return link
 
 
 # Implementation required.

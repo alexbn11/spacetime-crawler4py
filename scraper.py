@@ -6,8 +6,9 @@ from nltk.tokenize import word_tokenize, RegexpTokenizer
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 
-#nltk.download('stopwords')
-#nltk.download('punkt')
+# nltk.download('stopwords')
+# nltk.download('punkt')
+
 
 def scraper(url, resp):
     # print("scrapping...")
@@ -17,12 +18,12 @@ def scraper(url, resp):
             # print('Success!, 200 <= raw_response <= 400 ')
             # Don't know if this really works?
             # totalLength = processPage(url, resp)
-            links = extract_next_links(url, resp) 
+            links = extract_next_links(url, resp)
         else:
             print('Reject', "Status Code:", resp.status)
             # print("Code:", resp.raw_response.status_code)Causes ERROR
     except:
-        print("can't return status")    
+        print("can't return status")
 
     return [link for link in links if is_valid(link)]
 
@@ -44,11 +45,7 @@ def extract_next_links(url, resp):
     for link in linkers:
 
         if link != None and re.match(r'\/.*', link):
-            #reLink = link
-            #parsed = urlparse(url)
-            #link = str(parsed.scheme) + '://' + 
-            #str(parsed.netloc) + str(reLink)
-            link = urljoin(url,link)
+            link = urljoin(url, link)
 
         if is_valid(link):
             tingz.append(link)
@@ -74,7 +71,7 @@ def is_valid(url):
             r".+\.ics\.uci\.edu"
             + r"|.+\.cs\.uci\.edu"  # |in front helps sperate the searches
             + r"|.+\.informatics\.uci\.edu"
-            + r"|.+\.stat\.uci\.edu", parsed.netloc):
+                + r"|.+\.stat\.uci\.edu", parsed.netloc):
             return False
         elif re.match(r"today\.uci\.edu", parsed.netloc) and re.match(r"/department/information_computer_sciences/?", parsed.path.lower()):
             return True
@@ -82,10 +79,11 @@ def is_valid(url):
         # print("Checking <netloc>: {} for traps".format(parsed.netloc))
         if re.match(r"(www\.)?calendar", parsed.netloc):
             return False
-        
-        #if re.match(r'/events' | r'/calendar', parsed.path.lower()):  #problem area?
-        #    return False
-       
+
+        if re.match(r"/events"
+                    + r"|/calendar", parsed.path.lower()):  # problem area?
+            return False
+
         # Checks the <path> part of the URL to see if it's valid
         # If <path> ends with this file extension   .\.
         # re.match finds a match which returns True, not makes it false

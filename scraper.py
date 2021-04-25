@@ -16,18 +16,35 @@ def scraper(url, resp):
     try:
         if resp.raw_response:
             # print('Success!, 200 <= raw_response <= 400 ')
-            # Don't know if this really works?
-            # totalLength = processPage(url, resp)
+            
+            totalLength = processPage(url, resp) 
+            #print(url, " num of tokens:", totalLength)
             links = extract_next_links(url, resp)
         else:
             print('Reject', "Status Code:", resp.status)
             # print("Code:", resp.raw_response.status_code)Causes ERROR
     except:
-        print("can't return status")
+        print("TextProcessing Broke")
 
     return [link for link in links if is_valid(link)]
 
-# Implementation required.
+
+def processPage(url, resp):
+    try:
+        print("IN PROCESSPAGE():", url)
+        resp.raw_response.encoding = 'utf-8'
+        soup = BeautifulSoup(resp.raw_response.content, "lxml")
+        stop_words = set(stopwords.words('english'))
+    
+        tokenizer = RegexpTokenizer(r'\w+')
+        word_tokens = tokenizer.tokenize(soup.get_text().lower())
+        filtered_tokens = [w for w in word_tokens if not w in stop_words]
+
+        return len(filtered_tokens)
+    
+    except:
+        print("processPage() broke")
+        return 0
 
 
 def extract_next_links(url, resp):
@@ -96,17 +113,17 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-                + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
+            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
             return False
 
-        # avoid Queries
+        # avoid Queries: it's a crawler trap
         # <scheme>://<netloc>/<path>;<params>?<query>#<fragment>
         # if re.search(r"replytocom=", parsed.query.lower()):
         #    return False
         if parsed.query:
             return False
 
-        # avoid Fragments
+        # avoid Fragments : They appear to be self-referential
         if parsed.fragment:
             return False
 

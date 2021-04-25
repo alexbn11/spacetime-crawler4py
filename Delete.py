@@ -1,41 +1,29 @@
 import re
 import requests
 import nltk
-
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from urllib.parse import urlparse
+from nltk.tokenize import word_tokenize, RegexpTokenizer
+from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
-from urllib.request import Request, urlopen
-<<<<<<< HEAD
-
-from nltk.tokenize import RegexpTokenizer
-
-tokenizer = RegexpTokenizer(r'\w+')
-#tokenizer.tokenize('Eighty-seven miles to go, yet.  Onward!')
-
-example_sent = """This is a sample sentence, showing off the stop words filtration."""
-
-stop_words = set(stopwords.words('english'))
-
-word_tokens = tokenizer.tokenize(example_sent)
-
-filtered_sentence = [w for w in word_tokens if not w in stop_words]
-
-print(word_tokens)
-print(filtered_sentence)
 
 
-=======
-import re
->>>>>>> parent of 7fbbbd7 (Added text processing?)
-"""
 # Making a get request
 response = requests.get('http://www.ics.uci.edu/~sharad/personal-home-page')
 
+response.encoding = 'utf-8'
+soup = BeautifulSoup(response.content, "lxml")
+stop_words = set(stopwords.words('english'))
+
+tokenizer = RegexpTokenizer(r'\w+')
+word_tokens = tokenizer.tokenize(soup.get_text().lower())
+filtered_tokens = [w for w in word_tokens if not w in stop_words]
+
+print( len(filtered_tokens))
+
+
 # prinitng request text
 # print(response.text)
-
+"""
 if response:
     print('Success!')
 else:
@@ -49,7 +37,7 @@ else:
 # Note that even in MULTILINE mode, re.match() will only match at the beginning of the string and not at the beginning of each line.
 # If you want to locate a match anywhere in string, use search() instead (see also search() vs. match()).
 # SEEDURL = https://www.ics.uci.edu,https://www.cs.uci.edu,https://www.informatics.uci.edu,https://www.stat.uci.edu
-
+"""
 txt = "ngs.ics.uci.edu"
 txt = "www.ics.uci.edu"
 txt = "calendar.php?type=month&calend"
@@ -66,14 +54,11 @@ parsed1 = urlparse('https://speedtest.ics.uci.edu/')
 #print(parsed1.status_code)
 print(parsed)
 """
-
-<<<<<<< HEAD
-=======
+"""
 if re.match(r"today\.uci\.edu/?", parsed.netloc) and re.match(r"/department/information_computer_sciences/?", parsed.path.lower()):
     print("Pass")
 else :   
     print("fail")        
->>>>>>> parent of 7fbbbd7 (Added text processing?)
 '''
 req = Request("https://www.stat.uci.edu//www.stat.uci.edu/news")
 html_page = urlopen(req)
@@ -130,4 +115,4 @@ if re.match(
     + r"|thmx|mso|arff|rtf|jar|csv"
     + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
     print("FAILED:PATH")
-'''
+"""

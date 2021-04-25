@@ -24,8 +24,12 @@ def scraper(url, resp):
             urlLenFile.write("{} LENGTH:{}\n".format(url, totalLength))
             urlLenFile.close()
 
+            uniqueUrl = open("report/unique.txt", "a") 
+            uniqueUrl.write("{}\n".format(url))
+            uniqueUrl.close()
+
         else:
-            print('Reject', "Status Code:", resp.status)
+            print("Error")
             # print("Code:", resp.raw_response.status_code)Causes ERROR
     except:
         print("Scrapper Broke")
@@ -91,7 +95,7 @@ def is_valid(url):
             r".+\.ics\.uci\.edu"
             + r"|.+\.cs\.uci\.edu"  # |in front helps sperate the searches
             + r"|.+\.informatics\.uci\.edu"
-                + r"|.+\.stat\.uci\.edu", parsed.netloc):
+            + r"|.+\.stat\.uci\.edu", parsed.netloc):
             return False
         elif re.match(r"today\.uci\.edu", parsed.netloc) and re.match(r"/department/information_computer_sciences/?", parsed.path.lower()):
             return True

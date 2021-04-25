@@ -10,10 +10,12 @@ from bs4 import BeautifulSoup
 # nltk.download('punkt')
 
 longest = 0
+
+
 def scraper(url, resp):
     # print("scrapping...")
     links = []
-    global longest 
+    global longest
     try:
         if resp.raw_response:
             # print('Success!, 200 <= raw_response <= 400 ')
@@ -21,7 +23,7 @@ def scraper(url, resp):
                 totalLength = processPage(url, resp)
                 #print(url, " num of tokens:", totalLength)
                 links = extract_next_links(url, resp)
-                isICS(url,resp)
+                isICS(url, resp)
                 if totalLength > longest:
                     longest = totalLength
                     urlLenFile = open("report/urlLen.txt", "w")
@@ -44,16 +46,15 @@ def scraper(url, resp):
 def isICS(url, resp):
     try:
         parsed = urlparse(url)
-        if re.match(r".+(\.ics\.uci\.edu)$", parsed.netloc) and re.match(r"/$" + r"|$", parsed.path): 
-                soup = BeautifulSoup(resp.raw_response.text, "lxml")
-                links = []
-                for link in soup.findAll('a'):
-                    links.append(link.get('href'))
-                
-                icsPage = open("report/icsPage.txt", "a")
-                icsPage.write("{}, {}\n".format(url,len(links)))
-                icsPage.close()
+        if re.match(r".+(\.ics\.uci\.edu)$", parsed.netloc) and re.match(r"/$" + r"|$", parsed.path):
+            soup = BeautifulSoup(resp.raw_response.text, "lxml")
+            links = []
+            for link in soup.findAll('a'):
+                links.append(link.get('href'))
 
+            icsPage = open("report/icsPage.txt", "a")
+            icsPage.write("{}, {}\n".format(url, len(links)))
+            icsPage.close()
 
     except TypeError:
         print("TypeError for ", parsed)
@@ -143,7 +144,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-            + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
+                + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
             return False
 
         # avoid Queries: it's a crawler trap

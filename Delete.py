@@ -6,7 +6,31 @@ from nltk.tokenize import word_tokenize, RegexpTokenizer
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 
+# Making a get request
+response = requests.get('http://www.ics.uci.edu/~sharad/personal-home-page')
 
+response.encoding = 'utf-8'
+soup = BeautifulSoup(response.content, "lxml")
+stop_words = set(stopwords.words('english'))
+tokenizer = RegexpTokenizer(r'\w+')
+word_tokens = tokenizer.tokenize(soup.get_text().lower())
+filtered_tokens = [w for w in word_tokens if not w in stop_words]
+example="boot\'s and cuts"
+x=tokenizer.tokenize(example)
+print(x)
+
+print(filtered_tokens)
+
+def computeWordFrequencies(List):
+    wordFreq = OrderedDict() 
+    for word in List:
+        if word == "":
+            continue
+        elif word not in wordFreq:
+            wordFreq[word] = 1
+        else:
+            wordFreq[word] += 1
+    return wordFreq
 
 # prinitng request text
 # print(response.text)
@@ -24,7 +48,7 @@ else:
 # Note that even in MULTILINE mode, re.match() will only match at the beginning of the string and not at the beginning of each line.
 # If you want to locate a match anywhere in string, use search() instead (see also search() vs. match()).
 # SEEDURL = https://www.ics.uci.edu,https://www.cs.uci.edu,https://www.informatics.uci.edu,https://www.stat.uci.edu
-
+"""
 txt = "ngs.ics.uci.edu"
 txt = "www.ics.uci.edu"
 txt = "calendar.php?type=month&calend"
@@ -40,8 +64,7 @@ parsed1 = urlparse('https://speedtest.ics.uci.edu/')
 # print(parsed.query)
 #print(parsed1.status_code)
 print(parsed)
-"""
-"""
+
 response = requests.get('https://ngs.ics.uci.edu')
 if re.match(r".+(\.ics\.uci\.edu)$", parsed.netloc) and re.match(r"/$" + r"|$", parsed.path): 
     
@@ -50,6 +73,7 @@ if re.match(r".+(\.ics\.uci\.edu)$", parsed.netloc) and re.match(r"/$" + r"|$", 
     links = []
     for link in soup.findAll('a'):
         links.append(link.get('href'))
+"""
 
 
     
@@ -99,6 +123,10 @@ if re.match(r"(www\.)?calendar", parsed.netloc):
 if parsed.query:
     print("FAILED:QUERY")
 
+"""
+"""
+parsed = urlparse("http://www.informatics.uci.edu/files/pdf/InformaticsBrochure-March2018")
+print(parsed)
 if re.match(
     r".*\.(css|js|bmp|gif|jpe?g|ico"
     + r"|png|tiff?|mid|mp2|mp3|mp4"
@@ -108,5 +136,20 @@ if re.match(
     + r"|epub|dll|cnf|tgz|sha1"
     + r"|thmx|mso|arff|rtf|jar|csv"
     + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
-    print("FAILED:PATH")
-"""
+        print("FAILED:PATH")
+else:
+    print("Passed:path")        
+    
+if re.match(
+    r".*/(css|js|bmp|gif|jpe?g|ico"
+    + r"|png|tiff?|mid|mp2|mp3|mp4"
+    + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
+    + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
+    + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
+    + r"|epub|dll|cnf|tgz|sha1"
+    + r"|thmx|mso|arff|rtf|jar|csv"
+    + r"|rm|smil|wmv|swf|wma|zip|rar|gz)", parsed.path.lower()):
+        print("FAILED:PATH2")
+else:
+    print("Passed:path2")   
+    """   

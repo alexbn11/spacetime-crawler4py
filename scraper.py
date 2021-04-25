@@ -5,15 +5,16 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, RegexpTokenizer
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
+from collections import OrderedDict
 
 # nltk.download('stopwords')
 # nltk.download('punkt')
 
-longest = 0
+longest = 0 #GLOBAL VAR
 
 
 def scraper(url, resp):
-    # print("scrapping...")
+
     links = []
     global longest
     try:
@@ -21,7 +22,7 @@ def scraper(url, resp):
             # print('Success!, 200 <= raw_response <= 400 ')
             if resp.raw_response.content != b'':
                 totalLength = processPage(url, resp)
-                #print(url, " num of tokens:", totalLength)
+               
                 links = extract_next_links(url, resp)
                 isICS(url, resp)
                 if totalLength > longest:
@@ -36,7 +37,7 @@ def scraper(url, resp):
 
         else:
             print("Error")
-            # print("Code:", resp.raw_response.status_code)Causes ERROR
+            
     except:
         print("Scrapper Broke")
 
@@ -67,6 +68,7 @@ def processPage(url, resp):
         soup = BeautifulSoup(resp.raw_response.content, "lxml")
         stop_words = set(stopwords.words('english'))
 
+        # breaks up apostropheses, into thier own token
         tokenizer = RegexpTokenizer(r'\w+')
         word_tokens = tokenizer.tokenize(soup.get_text().lower())
         filtered_tokens = [w for w in word_tokens if not w in stop_words]
@@ -77,9 +79,33 @@ def processPage(url, resp):
         print("processPage() broke")
         return 0
 
+class mostCommonWords:
+    wordFreq = OrderedDict()
+
+def commonWords(url, resp):
+    try:
+        resp.raw_response.encoding = 'utf-8'
+        soup = BeautifulSoup(resp.raw_response.text, "lxml")
+        tokenizer = RegexpTokenizer(r'\w+')
+        word_tokens = tokenizer.tokenize(soup.get_text().lower())
+        filtered_tokens = [w for w in word_tokens if not w in stop_words]
+
+        MyWordFreq = mostCommonWords()
+       
+        for word in filtered_tokens:
+            if word == "":
+                continue
+            elif word not in wordFreq:
+                wordFreq[word] = 1
+            else:
+                wordFreq[word] += 1
+
+    except:
+        print("commonWords() broke")
+
 
 def extract_next_links(url, resp):
-    # print("extracting...")
+   
     # create a list to return to scraper()
     tingz = []
     resp.raw_response.encoding = 'utf-8'
@@ -144,13 +170,25 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-                + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
+                + r"|rm|smil|wmv|swf|wma|zip|rar|gz|war)$", parsed.path.lower()):
             return False
 
-        # avoid Queries: it's a crawler trap
-        # <scheme>://<netloc>/<path>;<params>?<query>#<fragment>
-        # if re.search(r"replytocom=", parsed.query.lower()):
-        #    return False
+        #Band-Aid fix for http://www.informatics.uci.edu/files/pdf/InformaticsBrochure-March2018 and things like that
+        if re.match(
+            r".*/(css|js|bmp|gif|jpe?g|ico"
+            + r"|png|tiff?|mid|mp2|mp3|mp4"
+            + r"|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf"
+            + r"|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names"
+            + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
+            + r"|epub|dll|cnf|tgz|sha1"
+            + r"|thmx|mso|arff|rtf|jar|csv"
+                + r"|rm|smil|wmv|swf|wma|zip|rar|gz|war)", parsed.path.lower()):
+                return False
+
+            # avoid Queries: it's a crawler trap
+            # <scheme>://<netloc>/<path>;<params>?<query>#<fragment>
+            # if re.search(r"replytocom=", parsed.query.lower()):
+            #    return False
         if parsed.query:
             return False
 

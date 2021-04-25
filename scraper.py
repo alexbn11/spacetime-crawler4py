@@ -15,52 +15,20 @@ def scraper(url, resp):
     try:
         if resp.raw_response:
             # print('Success!, 200 <= raw_response <= 400 ')
-<<<<<<< HEAD
             # Don't know if this really works?
             # totalLength = processPage(url, resp)
             links = extract_next_links(url, resp) 
-=======
-            links = extract_next_links(url, resp)
->>>>>>> parent of 7fbbbd7 (Added text processing?)
         else:
             print('Reject', "Status Code:", resp.status)
             # print("Code:", resp.raw_response.status_code)Causes ERROR
     except:
-<<<<<<< HEAD
-        print("can't return status")
-
-   # return [link for link in links if is_valid(link)]
-    for link in links: 
-        if is_valid(link):
-            return link
-=======
         print("can't return status")    
->>>>>>> parent of 7fbbbd7 (Added text processing?)
 
     return [link for link in links if is_valid(link)]
 
 # Implementation required.
 
 
-<<<<<<< HEAD
-def processPage(url, resp): 
-    #try:
-        resp.raw_response.encoding = 'utf-8'
-        soup = BeautifulSoup(resp.raw_response.content, "lxml")
-        stop_words = set(stopwords.words('english'))
-        tokenizer = RegexpTokenizer(r'\w+')
-    
-        word_tokens= tokenizer(soup.get_text().lower())
-        filtered_tokens = [w for w in word_tokens if not w in stop_words] 
-
-        return len(filtered_tokens)
-    #except:
-    #    print("process broke")
-
-
-
-=======
->>>>>>> parent of 7fbbbd7 (Added text processing?)
 def extract_next_links(url, resp):
     # print("extracting...")
     # create a list to return to scraper()
@@ -74,11 +42,6 @@ def extract_next_links(url, resp):
 
     # check if link is valid and/or relative
     for link in linkers:
-<<<<<<< HEAD
-        if link != None and re.match(r'\/.*', link):
-            link = urljoin(url,link)
-        
-=======
 
         if link != None and re.match(r'\/.*', link):
             #reLink = link
@@ -87,7 +50,6 @@ def extract_next_links(url, resp):
             #str(parsed.netloc) + str(reLink)
             link = urljoin(url,link)
 
->>>>>>> parent of 7fbbbd7 (Added text processing?)
         if is_valid(link):
             tingz.append(link)
 
@@ -120,12 +82,10 @@ def is_valid(url):
         # print("Checking <netloc>: {} for traps".format(parsed.netloc))
         if re.match(r"(www\.)?calendar", parsed.netloc):
             return False
-<<<<<<< HEAD
-        if re.match(r'/events' + r'|/calendar', parsed.path.lower()):
-            return False
-=======
-
->>>>>>> parent of 7fbbbd7 (Added text processing?)
+        
+        #if re.match(r'/events' | r'/calendar', parsed.path.lower()):  #problem area?
+        #    return False
+       
         # Checks the <path> part of the URL to see if it's valid
         # If <path> ends with this file extension   .\.
         # re.match finds a match which returns True, not makes it false

@@ -9,24 +9,28 @@ from bs4 import BeautifulSoup
 # nltk.download('stopwords')
 # nltk.download('punkt')
 
-
+longest = 0
 def scraper(url, resp):
     # print("scrapping...")
     links = []
+    global longest 
     try:
         if resp.raw_response:
             # print('Success!, 200 <= raw_response <= 400 ')
-            
-            totalLength = processPage(url, resp) 
-            #print(url, " num of tokens:", totalLength)
-            links = extract_next_links(url, resp)
-            urlLenFile = open("report/urlLen.txt", "a")
-            urlLenFile.write("{} LENGTH:{}\n".format(url, totalLength))
-            urlLenFile.close()
+            if resp.raw_response.content != b'':
+                totalLength = processPage(url, resp)
+                #print(url, " num of tokens:", totalLength)
+                links = extract_next_links(url, resp)
+                isICS(url,resp)
+                if totalLength > longest:
+                    longest = totalLength
+                    urlLenFile = open("report/urlLen.txt", "w")
+                    urlLenFile.write("{} LENGTH:{}\n".format(url, totalLength))
+                    urlLenFile.close()
 
-            uniqueUrl = open("report/unique.txt", "a") 
-            uniqueUrl.write("{}\n".format(url))
-            uniqueUrl.close()
+                uniqueUrl = open("report/unique.txt", "a")
+                uniqueUrl.write("{}\n".format(url))
+                uniqueUrl.close()
 
         else:
             print("Error")
@@ -37,18 +41,37 @@ def scraper(url, resp):
     return [link for link in links if is_valid(link)]
 
 
+def isICS(url, resp):
+    try:
+        parsed = urlparse(url)
+        if re.match(r".+(\.ics\.uci\.edu)$", parsed.netloc) and re.match(r"/$" + r"|$", parsed.path): 
+                soup = BeautifulSoup(resp.raw_response.text, "lxml")
+                links = []
+                for link in soup.findAll('a'):
+                    links.append(link.get('href'))
+                
+                icsPage = open("report/icsPage.txt", "a")
+                icsPage.write("{}, {}\n".format(url,len(links)))
+                icsPage.close()
+
+
+    except TypeError:
+        print("TypeError for ", parsed)
+        raise
+
+
 def processPage(url, resp):
     try:
         resp.raw_response.encoding = 'utf-8'
         soup = BeautifulSoup(resp.raw_response.content, "lxml")
         stop_words = set(stopwords.words('english'))
-    
+
         tokenizer = RegexpTokenizer(r'\w+')
         word_tokens = tokenizer.tokenize(soup.get_text().lower())
         filtered_tokens = [w for w in word_tokens if not w in stop_words]
 
         return len(filtered_tokens)
-    
+
     except:
         print("processPage() broke")
         return 0
@@ -68,7 +91,7 @@ def extract_next_links(url, resp):
     # check if link is valid and/or relative
     for link in linkers:
 
-        if link != None and re.match(r'\/.*', link):
+        if link != None and re.match(r"/.*", link):
             link = urljoin(url, link)
 
         if is_valid(link):
@@ -95,7 +118,7 @@ def is_valid(url):
             r".+\.ics\.uci\.edu"
             + r"|.+\.cs\.uci\.edu"  # |in front helps sperate the searches
             + r"|.+\.informatics\.uci\.edu"
-            + r"|.+\.stat\.uci\.edu", parsed.netloc):
+                + r"|.+\.stat\.uci\.edu", parsed.netloc):
             return False
         elif re.match(r"today\.uci\.edu", parsed.netloc) and re.match(r"/department/information_computer_sciences/?", parsed.path.lower()):
             return True

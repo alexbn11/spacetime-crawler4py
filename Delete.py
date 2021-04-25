@@ -7,21 +7,6 @@ from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 
 
-# Making a get request
-response = requests.get('http://www.ics.uci.edu/~sharad/personal-home-page')
-
-response.encoding = 'utf-8'
-soup = BeautifulSoup(response.content, "lxml")
-stop_words = set(stopwords.words('english'))
-
-tokenizer = RegexpTokenizer(r'\w+')
-word_tokens = tokenizer.tokenize(soup.get_text().lower())
-filtered_tokens = [w for w in word_tokens if not w in stop_words]
-
-print(len(filtered_tokens))
-urlLenFile = open("report/urlLen.txt", "+a")
-urlLenFile.write("{} LENGTH: {}\n".format(response.url, len(filtered_tokens)))
-urlLenFile.close()
 
 # prinitng request text
 # print(response.text)
@@ -39,11 +24,11 @@ else:
 # Note that even in MULTILINE mode, re.match() will only match at the beginning of the string and not at the beginning of each line.
 # If you want to locate a match anywhere in string, use search() instead (see also search() vs. match()).
 # SEEDURL = https://www.ics.uci.edu,https://www.cs.uci.edu,https://www.informatics.uci.edu,https://www.stat.uci.edu
-"""
+
 txt = "ngs.ics.uci.edu"
 txt = "www.ics.uci.edu"
 txt = "calendar.php?type=month&calend"
-parsed = urlparse('https://today.uci.edu/department/information_computer_sciences')
+parsed = urlparse('https://ngs.ics.uci.edu')
 #   'https://evoke.ics.uci.edu/values-in-design-fellows-honored-at-iconference-2013/?replytocom=43778#respond')
 parsed2 = urlparse('https://today.uci.edu/department/information_computer_sciences')
 #    'http://www.example.com/shoes?sex=men&color=black&size=44&sale=no')
@@ -57,11 +42,18 @@ parsed1 = urlparse('https://speedtest.ics.uci.edu/')
 print(parsed)
 """
 """
-if re.match(r"today\.uci\.edu/?", parsed.netloc) and re.match(r"/department/information_computer_sciences/?", parsed.path.lower()):
-    print("Pass")
-else :   
-    print("fail")        
-'''
+response = requests.get('https://ngs.ics.uci.edu')
+if re.match(r".+(\.ics\.uci\.edu)$", parsed.netloc) and re.match(r"/$" + r"|$", parsed.path): 
+    
+
+    soup = BeautifulSoup(response.text, "lxml")
+    links = []
+    for link in soup.findAll('a'):
+        links.append(link.get('href'))
+
+
+    
+"""
 req = Request("https://www.stat.uci.edu//www.stat.uci.edu/news")
 html_page = urlopen(req)
 

@@ -3,21 +3,22 @@ import requests
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 
 
 def scraper(url, resp):
     # print("scrapping...")
     links = []
-
-    if resp.raw_response:
-        # print('Success!, 200 <= raw_response <= 400 ')
-        links = extract_next_links(url, resp)
-    else:
-        print('Reject', "Status Code:", resp.status))
-        # print("Code:", resp.raw_response.status_code)Causes ERROR
-        
+    try:
+        if resp.raw_response:
+            # print('Success!, 200 <= raw_response <= 400 ')
+            links = extract_next_links(url, resp)
+        else:
+            print('Reject', "Status Code:", resp.status)
+            # print("Code:", resp.raw_response.status_code)Causes ERROR
+    except:
+        print("can't return status")    
 
     return [link for link in links if is_valid(link)]
 
@@ -39,10 +40,11 @@ def extract_next_links(url, resp):
     for link in linkers:
 
         if link != None and re.match(r'\/.*', link):
-            reLink = link
-            parsed = urlparse(url)
-            link = str(parsed.scheme) + '://' + \
-                       str(parsed.netloc) + str(reLink)
+            #reLink = link
+            #parsed = urlparse(url)
+            #link = str(parsed.scheme) + '://' + 
+            #str(parsed.netloc) + str(reLink)
+            link = urljoin(url,link)
 
         if is_valid(link):
             tingz.append(link)
@@ -70,7 +72,7 @@ def is_valid(url):
             + r"|.+\.informatics\.uci\.edu"
             + r"|.+\.stat\.uci\.edu", parsed.netloc):
             return False
-        elif re.match(r"today\.uci\.edu/?", parsed.netloc) and re.match(r"department/information_computer_sciences/?", parsed.path.lower()):
+        elif re.match(r"today\.uci\.edu", parsed.netloc) and re.match(r"/department/information_computer_sciences/?", parsed.path.lower()):
             return True
 
         # print("Checking <netloc>: {} for traps".format(parsed.netloc))

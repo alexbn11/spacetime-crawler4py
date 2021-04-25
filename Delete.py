@@ -31,10 +31,10 @@ else:
 txt = "ngs.ics.uci.edu"
 txt = "www.ics.uci.edu"
 txt = "calendar.php?type=month&calend"
-parsed = urlparse('https://www.stat.uci.edu/news/page/2')
- #   'https://evoke.ics.uci.edu/values-in-design-fellows-honored-at-iconference-2013/?replytocom=43778#respond')
-parsed2 = urlparse(
-    'http://www.example.com/shoes?sex=men&color=black&size=44&sale=no')
+parsed = urlparse('https://today.uci.edu/department/information_computer_sciences')
+#   'https://evoke.ics.uci.edu/values-in-design-fellows-honored-at-iconference-2013/?replytocom=43778#respond')
+parsed2 = urlparse('https://today.uci.edu/department/information_computer_sciences')
+#    'http://www.example.com/shoes?sex=men&color=black&size=44&sale=no')
 parsed1 = urlparse('https://speedtest.ics.uci.edu/')
 # https://www.stat.uci.edu/news/page/2
 # print(parsed)
@@ -42,9 +42,13 @@ parsed1 = urlparse('https://speedtest.ics.uci.edu/')
 # print(parsed.path)
 # print(parsed.query)
 #print(parsed1.status_code)
-#print(parsed)
+print(parsed)
 
-
+if re.match(r"today\.uci\.edu/?", parsed.netloc) and re.match(r"/department/information_computer_sciences/?", parsed.path.lower()):
+    print("Pass")
+else :   
+    print("fail")        
+'''
 req = Request("https://www.stat.uci.edu//www.stat.uci.edu/news")
 html_page = urlopen(req)
 
@@ -57,18 +61,15 @@ for link in soup.findAll('a'):
 print("Links:", links)
 
 
-'''if parsed2.query:
+#if re.match(r"(www\.)?calendar"
+if re.match(r'/events', parsed2.path.lower()):
     print("TRIGGERED")
-else:
-    print("PASSED")
-if re.match(r'.*\?.*|.*\/', parsed.query.lower()):
-            return False'''
 
-'''if parsed1.fragment:
+if parsed1.fragment:
     print("TRIGGERED")
 else:
     print("PASSED")
-'''
+
 if parsed.fragment:
     print("FAILED:FRAG")
 
@@ -103,3 +104,4 @@ if re.match(
     + r"|thmx|mso|arff|rtf|jar|csv"
     + r"|rm|smil|wmv|swf|wma|zip|rar|gz)$", parsed.path.lower()):
     print("FAILED:PATH")
+'''

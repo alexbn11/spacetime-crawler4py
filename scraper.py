@@ -1,13 +1,13 @@
 import re
 import requests
 import nltk
-nltk.download('stopwords')
-nltk.download('punkt')
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize, RegexpTokenizer
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 
+#nltk.download('stopwords')
+#nltk.download('punkt')
 
 def scraper(url, resp):
     # print("scrapping...")
@@ -15,9 +15,9 @@ def scraper(url, resp):
     try:
         if resp.raw_response:
             # print('Success!, 200 <= raw_response <= 400 ')
-            if resp.status != 204:  # Don't know if this really works?
-                totalLength = processPage(url, resp)
-                links = extract_next_links(url, resp)
+            # Don't know if this really works?
+            # totalLength = processPage(url, resp)
+            links = extract_next_links(url, resp) 
         else:
             print('Reject', "Status Code:", resp.status)
             # print("Code:", resp.raw_response.status_code)Causes ERROR
@@ -33,17 +33,20 @@ def scraper(url, resp):
 # Implementation required.
 
 
-def processPage(url, resp): {
+def processPage(url, resp): 
+    #try:
+        resp.raw_response.encoding = 'utf-8'
+        soup = BeautifulSoup(resp.raw_response.content, "lxml")
+        stop_words = set(stopwords.words('english'))
+        tokenizer = RegexpTokenizer(r'\w+')
     
-    resp.raw_response.encoding = 'utf-8'
-    soup = BeautifulSoup(resp.raw_response.content, "lxml")
-    stop_words = set(stopwords.words('english'))
-    
-    word_tokens= word_tokenize(soup.get_text().lower())
-    filtered_text = [w for w in word_tokens if not w in stop_words] 
+        word_tokens= tokenizer(soup.get_text().lower())
+        filtered_tokens = [w for w in word_tokens if not w in stop_words] 
 
-    return int
-}
+        return len(filtered_tokens)
+    #except:
+    #    print("process broke")
+
 
 
 def extract_next_links(url, resp):
@@ -59,14 +62,9 @@ def extract_next_links(url, resp):
 
     # check if link is valid and/or relative
     for link in linkers:
-
-        # absolute: <a href= http://example.com/page>
-        # relative: <a href= /page >
-        if link != None and re.match(r'/.*', link):
-            #urljoin('http://www.cwi.nl/%7Eguido/Python.html', 'FAQ.html')
-            # 'http://www.cwi.nl/%7Eguido/FAQ.html'
-            link = urljoin(url, link)
-
+        if link != None and re.match(r'\/.*', link):
+            link = urljoin(url,link)
+        
         if is_valid(link):
             tingz.append(link)
 
@@ -91,7 +89,7 @@ def is_valid(url):
             r".+\.ics\.uci\.edu"
             + r"|.+\.cs\.uci\.edu"  # |in front helps sperate the searches
             + r"|.+\.informatics\.uci\.edu"
-                + r"|.+\.stat\.uci\.edu", parsed.netloc):
+            + r"|.+\.stat\.uci\.edu", parsed.netloc):
             return False
         elif re.match(r"today\.uci\.edu", parsed.netloc) and re.match(r"/department/information_computer_sciences/?", parsed.path.lower()):
             return True
@@ -99,7 +97,7 @@ def is_valid(url):
         # print("Checking <netloc>: {} for traps".format(parsed.netloc))
         if re.match(r"(www\.)?calendar", parsed.netloc):
             return False
-        if re.match(r'/events' | r'/calendar', parsed.path.lower()):
+        if re.match(r'/events' + r'|/calendar', parsed.path.lower()):
             return False
         # Checks the <path> part of the URL to see if it's valid
         # If <path> ends with this file extension   .\.
@@ -126,6 +124,7 @@ def is_valid(url):
         # avoid Fragments it's a reference to the same page? From what I know.
         if parsed.fragment:
             return False
+
         return True
 
     except TypeError:

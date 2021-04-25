@@ -18,8 +18,10 @@ tokenizer = RegexpTokenizer(r'\w+')
 word_tokens = tokenizer.tokenize(soup.get_text().lower())
 filtered_tokens = [w for w in word_tokens if not w in stop_words]
 
-print( len(filtered_tokens))
-
+print(len(filtered_tokens))
+urlLenFile = open("report/urlLen.txt", "+a")
+urlLenFile.write("{} LENGTH:{}\n".format(response.url, len(filtered_tokens)))
+urlLenFile.close()
 
 # prinitng request text
 # print(response.text)

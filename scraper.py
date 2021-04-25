@@ -20,18 +20,21 @@ def scraper(url, resp):
             totalLength = processPage(url, resp) 
             #print(url, " num of tokens:", totalLength)
             links = extract_next_links(url, resp)
+            urlLenFile = open("report/urlLen.txt", "a")
+            urlLenFile.write("{} LENGTH:{}\n".format(url, totalLength))
+            urlLenFile.close()
+
         else:
             print('Reject', "Status Code:", resp.status)
             # print("Code:", resp.raw_response.status_code)Causes ERROR
     except:
-        print("TextProcessing Broke")
+        print("Scrapper Broke")
 
     return [link for link in links if is_valid(link)]
 
 
 def processPage(url, resp):
     try:
-        print("IN PROCESSPAGE():", url)
         resp.raw_response.encoding = 'utf-8'
         soup = BeautifulSoup(resp.raw_response.content, "lxml")
         stop_words = set(stopwords.words('english'))

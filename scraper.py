@@ -11,8 +11,9 @@ from collections import OrderedDict
 # nltk.download('stopwords')
 # nltk.download('punkt')
 
-longest = 0 #GLOBAL VAR
-
+#GLOBAL VAR
+longest = 0 
+MyWordFreq = OrderedDict()
 
 def scraper(url, resp):
 
@@ -81,8 +82,7 @@ def processPage(url, resp):
         return 0
 
 
-class mostCommonWords:
-    wordFreq = OrderedDict()
+
 
 def commonWords(url, resp):
     try:
@@ -94,7 +94,7 @@ def commonWords(url, resp):
         word_tokens = tokenizer.tokenize(soup.get_text().lower())
         filtered_tokens = [w for w in word_tokens if not w in stop_words]
 
-        MyWordFreq = OrderedDict()
+        
        
         for word in filtered_tokens:
             if word == "":

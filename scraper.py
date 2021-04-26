@@ -41,7 +41,7 @@ def scraper(url, resp):
             
     except:
         print("Scrapper Broke")
-        raise
+        
 
     return [link for link in links if is_valid(link)]
 

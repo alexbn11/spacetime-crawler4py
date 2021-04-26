@@ -117,6 +117,8 @@ def writeWordFrequencies(Frequencies):
         fiftyCom = open("report/fiftyCom.txt", "w")
         i = 0
         for key in Frequencies:
+            if re.match(r"[0-9]", (str)(key)):
+                continue
             x =(str)(key) + ' => '+ (str)(Frequencies[key]) + '\n'
             #y=x.encode('utf-8') # to output file
             fiftyCom.write(x) #Print to stdout 

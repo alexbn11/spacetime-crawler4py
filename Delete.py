@@ -32,6 +32,14 @@ def computeWordFrequencies(List):
             wordFreq[word] += 1
     return wordFreq
 
+def printWordFrequencies(Frequencies):
+    SortedFreq = sorted(Frequencies.items(), key=lambda item: (item[1]) ,reverse=True) #returns a list
+    Frequencies = {k: v for k, v in SortedFreq}
+    for key in Frequencies:
+        x =(str)(key) + ' => '+ (str)(Frequencies[key]) + '\n'
+        y=x.encode('utf-8') # to output file
+        sys.stdout.buffer.write(y) #Print to stdout 
+
 # prinitng request text
 # print(response.text)
 """

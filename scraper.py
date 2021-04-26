@@ -1,6 +1,7 @@
 import re
 import requests
 import nltk
+import traceback
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, RegexpTokenizer
 from urllib.parse import urlparse, urljoin
@@ -35,11 +36,11 @@ def scraper(url, resp):
                 uniqueUrl.write("{}\n".format(url))
                 uniqueUrl.close()
 
-        else:
-            print("Error")
+                writeWordFrequencies(commonWords(url, resp))
             
     except:
         print("Scrapper Broke")
+        raise
 
     return [link for link in links if is_valid(link)]
 
@@ -79,6 +80,7 @@ def processPage(url, resp):
         print("processPage() broke")
         return 0
 
+
 class mostCommonWords:
     wordFreq = OrderedDict()
 
@@ -86,22 +88,47 @@ def commonWords(url, resp):
     try:
         resp.raw_response.encoding = 'utf-8'
         soup = BeautifulSoup(resp.raw_response.text, "lxml")
+        stop_words = set(stopwords.words('english'))
+        
         tokenizer = RegexpTokenizer(r'\w+')
         word_tokens = tokenizer.tokenize(soup.get_text().lower())
         filtered_tokens = [w for w in word_tokens if not w in stop_words]
 
-        MyWordFreq = mostCommonWords()
+        MyWordFreq = OrderedDict()
        
         for word in filtered_tokens:
             if word == "":
                 continue
-            elif word not in wordFreq:
-                wordFreq[word] = 1
+            elif word not in MyWordFreq:
+                MyWordFreq[word] = 1
             else:
-                wordFreq[word] += 1
+                MyWordFreq[word] += 1
+        return MyWordFreq
 
     except:
         print("commonWords() broke")
+        traceback.print_exc()
+        raise
+
+def writeWordFrequencies(Frequencies):
+    try:
+        SortedFreq = sorted(Frequencies.items(), key=lambda item: (item[1]) ,reverse=True) #returns a list
+        Frequencies = {k: v for k, v in SortedFreq}
+        fiftyCom = open("report/fiftyCom.txt", "w")
+        i = 0
+        for key in Frequencies:
+            x =(str)(key) + ' => '+ (str)(Frequencies[key]) + '\n'
+            #y=x.encode('utf-8') # to output file
+            fiftyCom.write(x) #Print to stdout 
+            i=i+1
+            if i > 50:
+                break
+        fiftyCom.close()
+    except:
+        print("writeWordFrequencies() broke")
+        traceback.print_exc()
+        raise
+
 
 
 def extract_next_links(url, resp):
@@ -170,7 +197,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-                + r"|rm|smil|wmv|swf|wma|zip|rar|gz|war)$", parsed.path.lower()):
+                + r"|rm|smil|wmv|swf|wma|zip|rar|gz|war|mpg|ppsx)$", parsed.path.lower()):
             return False
 
         #Band-Aid fix for http://www.informatics.uci.edu/files/pdf/InformaticsBrochure-March2018 and things like that
@@ -182,7 +209,7 @@ def is_valid(url):
             + r"|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso"
             + r"|epub|dll|cnf|tgz|sha1"
             + r"|thmx|mso|arff|rtf|jar|csv"
-                + r"|rm|smil|wmv|swf|wma|zip|rar|gz|war)", parsed.path.lower()):
+                + r"|rm|smil|wmv|swf|wma|zip|rar|gz|war|mpg|ppsx)", parsed.path.lower()):
                 return False
 
             # avoid Queries: it's a crawler trap

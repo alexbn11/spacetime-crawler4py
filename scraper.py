@@ -71,6 +71,7 @@ def processPage(url, resp):
         stop_words = set(stopwords.words('english'))
 
         # breaks up apostropheses, into thier own token
+        # RegexpTokenizer uses REGEX Expressions to tokenize 
         tokenizer = RegexpTokenizer(r'\w+')
         word_tokens = tokenizer.tokenize(soup.get_text().lower())
         filtered_tokens = [w for w in word_tokens if not w in stop_words]
